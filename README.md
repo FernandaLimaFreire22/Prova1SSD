@@ -1,13 +1,28 @@
 # README — Modelo de Detecção de Fraudes em Transações de Cartão de Crédito 💳
 
-O objetivo deste projeto é desenvolver um Mínimo Produto Viável (MVP) de um sistema de detecção automática de fraudes em transações financeiras, utilizando técnicas de aprendizado de máquina supervisionado. A tarefa consiste em analisar um grande volume de transações de cartão de crédito, identificar padrões de comportamento e classificar automaticamente cada transação como “fraude” ou “não fraude”.
+O objetivo deste projeto é desenvolver um Mínimo Produto Viável (MVP) para um sistema de detecção automática de fraudes em transações financeiras, utilizando técnicas de aprendizado de máquina supervisionado. A proposta consiste em analisar um grande volume de transações com cartão de crédito, identificar padrões comportamentais e classificar automaticamente cada operação como “fraude” ou “não fraude”.
 
-Por se tratar de um problema real e crítico, a base apresenta forte desbalanceamento de classes, exigindo estratégias específicas para evitar métricas enganosas e melhorar a sensibilidade do modelo.
+Por se tratar de um problema real e de alta criticidade, a base de dados apresenta forte desbalanceamento de classes, o que demanda estratégias adequadas para evitar métricas ilusórias e garantir maior sensibilidade na detecção de fraudes.
+
+O projeto utiliza o dataset público Credit Card Fraud Detection, disponibilizado no Kaggle, escolhido com base em três fatores principais:
+
+* Relevância prática: a detecção de fraudes em cartões de crédito é um dos problemas mais clássicos e críticos no uso de machine learning, com impacto direto na segurança financeira.
+* Desafios técnicos: trata-se de um conjunto com mais de 280 mil registros e fraudes representando menos de 0,2% das amostras, configurando um cenário realista de classificação assimétrica que permite avaliar a robustez dos modelos.
+* Reprodutibilidade: por ser público e amplamente utilizado em pesquisas e competições, o acesso via Kaggle API garante que os experimentos possam ser reproduzidos de forma padronizada.
+
+Além disso, a base passou por um pré-processamento utilizando Análise de Componentes Principais (PCA), que resultou nas variáveis V1–V28. Essa etapa reduz a dimensionalidade, preserva a privacidade dos dados e gera atributos ortogonais com boa separabilidade estatística, influenciando diretamente nas decisões de modelagem adotadas nas fases subsequentes do projeto.
 
 ## 🧠 Hipótese
-As transações fraudulentas apresentam padrões estatísticos e numéricos diferentes das transações legítimas, permitindo que algoritmos supervisionados aprendam a distinguir esses dois grupos com alta capacidade de generalização.
+Transações fraudulentas apresentam padrões estatísticos e numéricos distintos em relação às transações legítimas, o que possibilita que algoritmos supervisionados aprendam a diferenciar esses dois grupos com boa capacidade de generalização.
 
-A hipótese central é de que, com a combinação de: métricas adequadas (como F1 e ROC-AUC), balanceamento dos dados (SMOTE) e ajuste do threshold de decisão, é possível obter um modelo com alto recall para a classe minoritária, sem comprometer a precisão de forma significativa.
+A hipótese central do projeto é que, ao combinar métricas adequadas (como F1-score e ROC-AUC), técnicas de balanceamento de dados (como SMOTE) e ajuste do threshold de decisão, é possível obter um modelo com alto recall para a classe minoritária, preservando uma precisão satisfatória.
+
+Para estabelecer um baseline interpretável, foi utilizada Regressão Logística, um modelo linear simples e amplamente empregado em problemas de classificação binária. Além de permitir avaliar a separabilidade linear entre as classes, esse modelo serve como referência inicial para comparar métodos mais sofisticados.
+
+Em seguida, foi testado o modelo Random Forest, escolhido por sua robustez, capacidade de capturar relações não lineares e bom desempenho em cenários complexos. Entre suas principais vantagens neste contexto, destacam-se:
+* Resistência natural a ruídos e outliers;
+* Bom desempenho com dados desbalanceados, especialmente quando combinado com técnicas de oversampling e ajuste de threshold;
+* Alta flexibilidade, com possibilidade de ajuste fino via hiperparâmetros e fornecimento de probabilidades calibradas para otimização do ponto de corte.
 
 ## 1) Configuração Inicial e Instalação de Pacotes
 Nesta etapa foram instaladas e importadas todas as bibliotecas necessárias:
@@ -139,7 +154,16 @@ A segunda melhoria aplicada foi o ajuste do limiar de decisão (threshold). O th
 Essa abordagem aumentou significativamente a sensibilidade do modelo, reduzindo falsos negativos e melhorando o equilíbrio entre precisão e recall — dois indicadores críticos em problemas de detecção de fraude.
 
 ## 12) 📊 Comparação de Modelos
-Com todas as etapas implementadas, foi realizada uma comparação consolidada entre modelos. Os resultados mostram claramente que a acurácia isolada é enganosa, já que mesmo um classificador que só prediz a classe majoritária apresenta alta acurácia. Métricas mais sensíveis ao desbalanceamento, como F1-score e ROC-AUC, mostraram que as estratégias de SMOTE e threshold tuning foram determinantes para melhorar o desempenho do modelo, especialmente na classe minoritária.
+Com todas as etapas de modelagem concluídas, foi realizada uma comparação consolidada entre os modelos. Os resultados evidenciaram que a acurácia isolada pode ser enganosa, pois até mesmo um classificador que sempre prediz a classe majoritária obtém valores elevados nessa métrica. Em contrapartida, métricas mais adequadas para cenários desbalanceados, como F1-score e ROC-AUC, mostraram que o uso combinado de SMOTE e ajuste de threshold foi decisivo para elevar o desempenho dos modelos, sobretudo na detecção da classe minoritária (fraude).
+
+Após todas as etapas de experimentação e otimização, o modelo com melhor performance foi a Random Forest otimizada via GridSearchCV, combinada com as estratégias de rebalanceamento com SMOTE e ajuste de threshold.
+
+Essa solução destacou-se por:
+* Alcançar alta capacidade de detecção de fraudes, apresentando recall e F1-score significativamente superiores aos demais modelos;
+* Demonstrar boa capacidade de generalização, com métricas consistentes entre treino e teste e baixa variância na validação cruzada;
+* Oferecer robustez prática, refletida em um ROC-AUC elevado e estabilidade mesmo diante de forte desbalanceamento de classes.
+
+Assim, o modelo final atende plenamente ao objetivo central do projeto: maximizar a detecção de fraudes com o menor número possível de falsos negativos, preservando ao mesmo tempo uma boa precisão global.
 
 ## 13) 📊 Análise do Desbalanceamento
 A análise do desbalanceamento foi complementada com um gráfico de barras, que ilustrou visualmente a disparidade extrema entre as classes “Não Fraude” e “Fraude”. Essa etapa reforçou a importância das técnicas de balanceamento aplicadas para que o modelo conseguisse aprender padrões da minoria de forma eficaz.
